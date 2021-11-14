@@ -29,8 +29,18 @@ public class PeopleController {
     }
 
     @PutMapping(value="/people")
-    public void getOnePeople(@RequestBody People people) {
+    public void putOnePeople(@RequestBody People people) {
          dao.save(people);
+    }
+
+    @PostMapping(value = "/people")
+    public void postOnePeople(@RequestBody People people){
+        dao.add(people);
+    }
+
+    @DeleteMapping(value = "/people/{id}")
+    public void deleteOnePeople(@PathVariable int id) {
+        dao.delete(id);
     }
 
 

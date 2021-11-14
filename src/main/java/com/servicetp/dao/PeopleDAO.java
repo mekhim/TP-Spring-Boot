@@ -42,14 +42,44 @@ public class PeopleDAO implements IPeopleDAO{
 
     @Override
     public void save(People people) {
-        /*
-        int index = foundIndexById(people.get_id());
-        if(index != -1){
-            this.people.set(index,people);
-        }
-        */
+        DBObject peopleDB = People_to_DBObject(people);
+        DBObject template = new BasicDBObject("_id",people.get_id());
+        MongoDBConnection.getInstance().getCollection().update(template,peopleDB);
     }
 
+    @Override
+    public void add(People people) {
+        DBObject peopleDB = People_to_DBObject(people);
+        MongoDBConnection.getInstance().getCollection().insert(peopleDB);
+    }
+
+    @Override
+    public void delete(int id) {
+        DBObject peopleDB = new BasicDBObject("_id",id);
+        MongoDBConnection.getInstance().getCollection().remove(peopleDB);
+    }
+
+
+    /**
+     * convertit un people en DBObject
+     * @param people people à convertir
+     * @return le people convertit en DBObject
+     */
+    private static DBObject People_to_DBObject(People people){
+        DBObject peopleDB = new BasicDBObject("_id",people.get_id())
+                .append("lastname",people.getLastname())
+                .append("firstname",people.getFirstname())
+                .append("address",new BasicDBObject("street",people.getAddress().getStreet())
+                    .append("postalCode",people.getAddress().getPostalCode())
+                    .append("city",people.getAddress().getCity()));
+        return peopleDB;
+    }
+
+    /**
+     * convertit un DBOject (une réponse d'une requête) en people
+     * @param object le DBObject à convertir
+     * @return le DBObject convertit en People
+     */
     private static People DBobject_to_People(DBObject object){
         int _id = (int)object.get("_id");
         String lastname = (String)object.get("lastname");
